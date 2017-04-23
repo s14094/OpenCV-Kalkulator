@@ -587,12 +587,22 @@ void trackerLiner(int dM10, int dM01, int dArea, int &iLastX, int &iLastY, Mat i
 
 void loadingInfo()
 {
+	cout << "---------- ControlPanel: ----------------------------------" << endl;
 	cout << "ControlPanel:" << endl;
 	cout << "1. Red / Blue / Green / Yellow / Light Blue" << endl;
 	cout << "2. Linie sledzace wskaznik" << endl;
 	cout << "3. Pointer sledzacy wskaznik" << endl;
 	cout << "4. Kalibracja kontrastu obrazu" << endl;
 	cout << "5. Kalibracja jasnosci obrazu" << endl;
+	cout << "---------- Skroty klawiszowe: -----------------------------" << endl;
+	cout << "Strzalka lewo / prawo - jasnosc" << endl;
+	cout << "Strzalka gora / dol - kontrast" << endl;
+	cout << "'[' - poprzedni kolor" << endl;
+	cout << "']' - nastepny kolor" << endl;
+	cout << "'P' - Pointer sledzacy wskaznik" << endl;
+	cout << "'L' - Linie sledzace wskaznik" << endl;
+	cout << "" << endl;
+
 }
 
 void controlPanel(int &cpSliderColor, int &iLowH, int &iHighH, int &iLowS, int &iHighS, int &iLowV, int &iHighV, int &isTrackerLiner, int &isTrackerPointer,
@@ -826,7 +836,7 @@ void changeBrightness(int cpSliderBrightness, int cpBrightnessFirstNum, int cpBr
 	brigtnessChange.convertTo(imgOriginal, cpBrightnessFirstNum, cpBrightnessSecondNum, cpBrightnessThirdNum); //contrast change
 }
 
-void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int &cpSliderColor)
+void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int &cpSliderColor, int &isTrackerLiner, int &isTrackerPointer)
 {
 	/*
 	1 = 49
@@ -850,6 +860,28 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 	arrowkeydown (contrast down) = 80
 	*/
 
+	if (keyPressed == 108)
+	{
+		if (isTrackerLiner == 0)
+		{
+			isTrackerLiner = 1;
+		}
+		else if (isTrackerLiner == 1)
+		{
+			isTrackerLiner = 0;
+		}
+	}
+	if (keyPressed == 112)
+	{
+		if (isTrackerPointer == 0)
+		{
+			isTrackerPointer = 1;
+		}
+		else if (isTrackerPointer == 1)
+		{
+			isTrackerPointer = 0;
+		}
+	}
 	if (keyPressed == 91)
 	{
 		if (cpSliderColor > 0)
@@ -1086,7 +1118,7 @@ int main(int argc, char** argv)
 			fflush(stdin);
 			keyPressed = _getch();
 			cout << "key pressed: "  << keyPressed << endl;
-			keyBind(keyPressed, cpSliderContrast, cpSliderBrightness, cpSliderColor);
+			keyBind(keyPressed, cpSliderContrast, cpSliderBrightness, cpSliderColor, isTrackerLiner, isTrackerPointer);
 		}
 
 
