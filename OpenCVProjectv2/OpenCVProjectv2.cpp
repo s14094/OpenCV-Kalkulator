@@ -1240,7 +1240,7 @@ int main(int argc, char** argv)
 #pragma endregion
 
 		namedWindow("Original", WINDOW_NORMAL);
-		imshow("Original", imgOriginal); //show the original image
+		imshow("Original", imgOriginal); //show the original image.
 
 		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
 		{
