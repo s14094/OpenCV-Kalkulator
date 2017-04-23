@@ -1,4 +1,4 @@
-//source http://opencv-srf.blogspot.com/2010/09/object-detection-using-color-seperation.html
+//base http://opencv-srf.blogspot.com/2010/09/object-detection-using-color-seperation.html
 #include "stdafx.h"
 #include <opencv2/core/utility.hpp>
 #include <opencv2/videoio.hpp>
@@ -6,15 +6,12 @@
 #include <iostream>
 #include <cstring>
 #include <opencv2/features2d.hpp>
-#include <cstdlib>
 #include <vector>
 #include <cmath>
 #include <cstdlib>
-#include <iostream>
 #include <opencv2\opencv.hpp>
 #include <conio.h> 
 #include <opencv2\highgui.hpp>
-#include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <Windows.h>
@@ -55,6 +52,7 @@ void userInterface(Mat imgTmp, Mat imgOriginal)
 	string divisor = "/";
 	string equal = "=";
 	string C = "C";
+	string i = "I";
 
 	Point oneOrg(32, 30);
 	Point twoOrg(97, 30);
@@ -72,6 +70,7 @@ void userInterface(Mat imgTmp, Mat imgOriginal)
 	Point divisorOrg(455, 450);
 	Point equalOrg(585, 450);
 	Point COrg(25, 230);
+	Point iOrg(27, 180);
 
 	//Size textSize = getTextSize(one, fontFace, fontScale, thickness, &baseline);
 
@@ -91,6 +90,7 @@ void userInterface(Mat imgTmp, Mat imgOriginal)
 	putText(imgOriginal, divisor, divisorOrg, fontFace, fontScale, textColorB, thicknessB, 8);
 	putText(imgOriginal, equal, equalOrg, fontFace, fontScale, textColorB, thicknessB, 8);
 	putText(imgOriginal, C, COrg, fontFace, fontScale, textColorB, thicknessB, 8);
+	putText(imgOriginal, i, iOrg, fontFace, fontScale, textColorB, thicknessB, 8);
 
 	putText(imgOriginal, one, oneOrg, fontFace, fontScale, textColor, thickness, 8);
 	putText(imgOriginal, two, twoOrg, fontFace, fontScale, textColor, thickness, 8);
@@ -108,6 +108,7 @@ void userInterface(Mat imgTmp, Mat imgOriginal)
 	putText(imgOriginal, divisor, divisorOrg, fontFace, fontScale, textColor, thickness, 8);
 	putText(imgOriginal, equal, equalOrg, fontFace, fontScale, textColor, thickness, 8);
 	putText(imgOriginal, C, COrg, fontFace, fontScale, textColor, thickness, 8);
+	putText(imgOriginal, i, iOrg, fontFace, fontScale, textColor, thickness, 8);
 
 	// linie gora
 	line(imgOriginal, Point(1, 50), Point(650, 50), lineColorB, lineTypeB);
@@ -147,12 +148,14 @@ void userInterface(Mat imgTmp, Mat imgOriginal)
 	line(imgOriginal, Point(520, 400), Point(520, 500), lineColor, lineType);
 
 	// linia lewo
+	line(imgOriginal, Point(1, 150), Point(50, 150), lineColorB, lineTypeB);
 	line(imgOriginal, Point(1, 200), Point(50, 200), lineColorB, lineTypeB);
-	line(imgOriginal, Point(50, 200), Point(50, 250), lineColorB, lineTypeB);
+	line(imgOriginal, Point(50, 150), Point(50, 250), lineColorB, lineTypeB);
 	line(imgOriginal, Point(1, 250), Point(50, 250), lineColorB, lineTypeB);
 
+	line(imgOriginal, Point(1, 150), Point(50, 150), lineColor, lineType);
 	line(imgOriginal, Point(1, 200), Point(50, 200), lineColor, lineType);
-	line(imgOriginal, Point(50, 200), Point(50, 250), lineColor, lineType);
+	line(imgOriginal, Point(50, 150), Point(50, 250), lineColor, lineType);
 	line(imgOriginal, Point(1, 250), Point(50, 250), lineColor, lineType);
 }
 
@@ -839,16 +842,16 @@ void changeBrightness(int cpSliderBrightness, int cpBrightnessFirstNum, int cpBr
 void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int &cpSliderColor, int &isTrackerLiner, int &isTrackerPointer)
 {
 	/*
-	1 = 49
-	2 = 50
-	3 = 51
-	4 = 52
-	5 = 53
-	6 = 54
-	7 = 55
-	8 = 56
-	9 = 57
-	0 = 48
+	1 (position)= 49
+	2 (1st num) = 50
+	3 (operator) = 51
+	4 (2nd num) = 52
+	5 (result) = 53
+	6 (choice) = 54
+	7 (wait frame) = 55
+	8 (frame) = 56
+	9 () = 57
+	0 () = 48
 	L (liner) = 108
 	P (pointer) = 112
 	R (reset) = 114 (reset and clear console)
@@ -859,7 +862,51 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 	arrowkeyup (contrast up) = 72
 	arrowkeydown (contrast down) = 80
 	*/
+	if (keyPressed == 114)
+	{
+		system("cls");
+		loadingInfo();
+	}
+	if (keyPressed == 49)
+	{
 
+	}
+	if (keyPressed == 50)
+	{
+
+	}
+	if (keyPressed == 51)
+	{
+
+	}
+	if (keyPressed == 52)
+	{
+
+	}
+	if (keyPressed == 53)
+	{
+
+	}
+	if (keyPressed == 54)
+	{
+
+	}
+	if (keyPressed == 55)
+	{
+
+	}
+	if (keyPressed == 56)
+	{
+
+	}
+	if (keyPressed == 57)
+	{
+
+	}
+	if (keyPressed == 48)
+	{
+
+	}
 	if (keyPressed == 108)
 	{
 		if (isTrackerLiner == 0)
@@ -928,8 +975,8 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 
 /*
 TODO
-- fix all warinings
-- key bindy
+- fix all warnings
+- dokonczyc key bindy
 - fix result ( dzielenie nie dziala, int first & 2nd num -> float) ( znaleznie metody na wyswietalnie liczby po przecinku jesli nie .0 )
 - zmiana kontrastu i jasnosci tylko raz po zmianie a nie co kazdy loop petli ? czy aby napewno? - sprawdzenie wydajnosci
 - dodanie kontrastu i jasnosci do debuga ? po co?
