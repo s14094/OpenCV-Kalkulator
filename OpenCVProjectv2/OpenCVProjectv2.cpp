@@ -1,18 +1,10 @@
 //base http://opencv-srf.blogspot.com/2010/09/object-detection-using-color-seperation.html
 #include "stdafx.h"
-#include <opencv2/core/utility.hpp>
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>
 #include <iostream>
-#include <cstring>
-#include <opencv2/features2d.hpp>
 #include <vector>
-#include <cmath>
-#include <cstdlib>
-#include <opencv2\opencv.hpp>
 #include <conio.h> 
-#include <opencv2\highgui.hpp>
-#include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <Windows.h>
 
@@ -40,7 +32,6 @@ void userInterface(Mat imgTmp, Mat imgOriginal)
 	double fontScale = 1;
 	int thickness = 4;
 	int thicknessB = 6;
-	int baseline = 0;
 	Scalar textColor = Scalar(0, 0, 0);
 	Scalar lineColor = Scalar(255, 255, 255);
 	Scalar textColorB = Scalar(255, 255, 255);
@@ -357,6 +348,7 @@ void firstNumPick(int &firstNum, Mat imgOriginal, int &choice)
 	case 10:
 		firstNum = 0;
 		break;
+	default: ;
 	}
 }
 
@@ -376,6 +368,7 @@ void operationPick(int &operation, Mat imgOriginal, int &choice)
 	case 14:
 		operation = 14;
 		break;
+	default: ;
 	}
 }
 
@@ -413,6 +406,7 @@ void secondNumPick(int &secondNum, Mat imgOriginal, int &choice)
 	case 10:
 		secondNum = 0;
 		break;
+	default: ;
 	}
 }
 
@@ -422,13 +416,11 @@ void showFirstNum(int firstNum, Mat imgOriginal, Scalar colorPicked)
 	double fontScale = 3;
 	int thickness = 4;
 	int thicknessB = 6;
-	int baseline = 0;
 	Scalar textColor = Scalar(0, 0, 0);
 	Scalar textColorB = colorPicked;
 	Point pointFirstNum(5, 370);
 
-	string pick = "-";
-	pick = to_string(firstNum);
+	string pick = to_string(firstNum);
 	putText(imgOriginal, pick, pointFirstNum, fontFace, fontScale, textColorB, thicknessB, 8);
 	putText(imgOriginal, pick, pointFirstNum, fontFace, fontScale, textColor, thickness, 8);
 }
@@ -439,10 +431,8 @@ void showOperation(int operation, Mat imgOriginal, Scalar colorPicked)
 	double fontScale = 3;
 	int thickness = 4;
 	int thicknessB = 6;
-	int baseline = 0;
 	Scalar textColor = Scalar(0, 0, 0);
 	Scalar textColorB = colorPicked;
-	int lineType = 3;
 	Point pointFirstNum(70, 370);
 	string pick;
 	if (operation == 11)
@@ -472,14 +462,11 @@ void showSecondNum(int secondNum, Mat imgOriginal, Scalar colorPicked)
 	double fontScale = 3;
 	int thickness = 4;
 	int thicknessB = 6;
-	int baseline = 0;
 	Scalar textColor = Scalar(0, 0, 0);
 	Scalar textColorB = colorPicked;
-	int lineType = 3;
 	Point pointSecondNum(140, 370);
 
-	string pick = "-";
-	pick = to_string(secondNum);
+	string pick = to_string(secondNum);
 	putText(imgOriginal, pick, pointSecondNum, fontFace, fontScale, textColorB, thicknessB, 8);
 	putText(imgOriginal, pick, pointSecondNum, fontFace, fontScale, textColor, thickness, 8);
 }
@@ -490,10 +477,8 @@ void showResult(float result, Mat imgOriginal, Scalar colorPicked)
 	double fontScale = 3;
 	int thickness = 4;
 	int thicknessB = 6;
-	int baseline = 0;
 	Scalar textColor = Scalar(0, 0, 0);
 	Scalar textColorB = colorPicked;
-	int lineType = 3;
 	Point pointResultNum(300, 370);
 	Point pointEqualSign(220, 370);
 
@@ -525,18 +510,16 @@ void newShowError(string error, Mat imgOriginal, int &ifShowError, string &newEr
 	double fontScale = 1;
 	int thickness = 1;
 	int thicknessB = 3;
-	int baseline = 0;
 	Scalar textColor = Scalar(30, 222, 30);
 	Scalar textColorB = Scalar(0, 0, 0);
-	int lineType = 1;
 	Point pointErrorBox(1, 80);
-	int waitFewFrames;
 	ifShowError = 1;
 	putText(imgOriginal, newError, pointErrorBox, fontFace, fontScale, textColorB, thicknessB, 8);
 	putText(imgOriginal, newError, pointErrorBox, fontFace, fontScale, textColor, thickness, 8);
 }
 
-void equalPick(int firstNum, int operation, int secondNum, Mat imgOriginal, int choice, float &result, int ifShowError, string newError)
+
+void equalPick(int firstNum, int operation, int secondNum, Mat imgOriginal, int choice, float &result, int &ifShowError, string &newError)
 {
 	if (operation == 11)
 	{
@@ -572,6 +555,7 @@ void cancelPick(int &firstNum, int &operation, int &secondNum, float &result)
 	result = 123456;
 }
 
+// ReSharper disable once CppParameterValueIsReassigned
 void trackerPointer(int dM10, int dM01, int dArea, int iLastX, int iLastY, Mat imgPointer)
 {
 	int posX = dM10 / dArea;
@@ -1092,8 +1076,6 @@ int main(int argc, char** argv)
 	int ifShowError = 0; // czy aktualnie wyswietlac error boxa
 	int doShowError = 0; // czas wyswietlania error boxa we framach
 
-	int keyPressed;
-
 	int iLastX = -1;
 	int iLastY = -1;
 
@@ -1105,8 +1087,8 @@ int main(int argc, char** argv)
 	int isChoice = 0; //6
 	int isWaitFrame = 0; //7
 	int isFrame = 0; //8
-	int isShowDebugWindow = 1; //9
-	int isShowBlackwhiteWindow = 1; //0
+	//int isShowDebugWindow = 1; //9
+	//int isShowBlackwhiteWindow = 1; //0
 
 	int isTrackerLiner = 0; //L
 	int isTrackerPointer = 1; //P
@@ -1121,7 +1103,7 @@ int main(int argc, char** argv)
 	int cpBrightnessThirdNum = 0; // +/- o 10
 	Mat contrastChange;
 	Mat brightnessChange;
-	bool ifChanged = false;
+	//bool ifChanged = false;
 
 	// colors
 
@@ -1181,14 +1163,6 @@ int main(int argc, char** argv)
 
 		debugControlPanel(isPosition, is1stNum, isOperator, is2ndNum, isResult, isChoice, isWaitFrame, isFrame,
 			iLastX, iLastY, firstNum, secondNum, operation, result, choice, waitFrame, frame);
-
-
-		int isPosition = 0; //1
-		int is1stNum = 0; //2
-		int isOperator = 0; //3
-		int is2ndNum = 0; //4
-		int isResult = 0; //5
-		int isChoice = 0; //6
 
 		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
 
@@ -1264,7 +1238,7 @@ int main(int argc, char** argv)
 		while (_kbhit())
 		{
 			fflush(stdin);
-			keyPressed = _getch();
+			int keyPressed = _getch();
 			//cout << "key pressed: " << keyPressed << endl;
 			keyBind(imgOriginal, keyPressed, cpSliderContrast, cpSliderBrightness, cpSliderColor, isTrackerLiner, isTrackerPointer, ifShowError, newError,
 				isFrame, isWaitFrame, isChoice, isResult, is2ndNum, isOperator, is1stNum, isPosition);
@@ -1354,7 +1328,7 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			firstNum == -1;
+			firstNum = -1;
 		}
 
 
