@@ -23,7 +23,20 @@ void userInterface(Mat imgTmp, Mat imgOriginal)
 {
 	Mat imgLines2 = Mat::zeros(imgTmp.size(), CV_8UC3);;
 
-	int fontFace = FONT_HERSHEY_DUPLEX;
+	enum fontPick
+	{
+		FONT_HERSHEY_SIMPLEX = 0,
+		FONT_HERSHEY_PLAIN = 1,
+		FONT_HERSHEY_DUPLEX = 2,
+		FONT_HERSHEY_COMPLEX = 3,
+		FONT_HERSHEY_TRIPLEX = 4,
+		FONT_HERSHEY_COMPLEX_SMALL = 5,
+		FONT_HERSHEY_SCRIPT_SIMPLEX = 6,
+		FONT_HERSHEY_SCRIPT_COMPLEX = 7,
+		FONT_ITALIC = 16
+	};
+
+	int fontFace = fontPick(2);
 	double fontScale = 1;
 	int thickness = 4;
 	int thicknessB = 6;
@@ -493,24 +506,37 @@ void showResult(float result, Mat imgOriginal, Scalar colorPicked)
 
 }
 
-void showError(string error, Mat imgOriginal)
+void newShowError(string error, Mat imgOriginal, int &ifShowError, string &newError)
 {
+	enum fontPick
+	{
+		FONT_HERSHEY_SIMPLEX = 0,
+		FONT_HERSHEY_PLAIN = 1,
+		FONT_HERSHEY_DUPLEX = 2,
+		FONT_HERSHEY_COMPLEX = 3,
+		FONT_HERSHEY_TRIPLEX = 4,
+		FONT_HERSHEY_COMPLEX_SMALL = 5,
+		FONT_HERSHEY_SCRIPT_SIMPLEX = 6,
+		FONT_HERSHEY_SCRIPT_COMPLEX = 7,
+		FONT_ITALIC = 16
+	};
 
-	int fontFace = FONT_HERSHEY_DUPLEX;
+	int fontFace = fontPick(2);
 	double fontScale = 1;
 	int thickness = 1;
+	int thicknessB = 3;
 	int baseline = 0;
-	Scalar textColor = Scalar(255, 255, 255);
+	Scalar textColor = Scalar(30, 222, 30);
+	Scalar textColorB = Scalar(0, 0, 0);
 	int lineType = 1;
-	Point pointErrorBox(1, 75);
-
-	//debug
-	//cout << error << endl;
-
-	putText(imgOriginal, error, pointErrorBox, fontFace, fontScale, textColor, thickness, 8);
+	Point pointErrorBox(1, 80);
+	int waitFewFrames;
+	ifShowError = 1;
+	putText(imgOriginal, newError, pointErrorBox, fontFace, fontScale, textColorB, thicknessB, 8);
+	putText(imgOriginal, newError, pointErrorBox, fontFace, fontScale, textColor, thickness, 8);
 }
 
-void equalPick(int firstNum, int operation, int secondNum, Mat imgOriginal, int choice, float &result)
+void equalPick(int firstNum, int operation, int secondNum, Mat imgOriginal, int choice, float &result, int ifShowError, string newError)
 {
 	if (operation == 11)
 	{
@@ -532,7 +558,8 @@ void equalPick(int firstNum, int operation, int secondNum, Mat imgOriginal, int 
 		}
 		else
 		{
-			showError("nie mozna dzielic przez 0", imgOriginal);
+			newError = "Nie mozna dzielic przez '0'";
+			newShowError("Nie mozna dzielic przez '0'", imgOriginal, ifShowError = 1, newError);
 		}
 	}
 }
@@ -591,7 +618,6 @@ void trackerLiner(int dM10, int dM01, int dArea, int &iLastX, int &iLastY, Mat i
 void loadingInfo()
 {
 	cout << "---------- ControlPanel: ----------------------------------" << endl;
-	cout << "ControlPanel:" << endl;
 	cout << "1. Red / Blue / Green / Yellow / Light Blue" << endl;
 	cout << "2. Linie sledzace wskaznik" << endl;
 	cout << "3. Pointer sledzacy wskaznik" << endl;
@@ -600,16 +626,25 @@ void loadingInfo()
 	cout << "---------- Skroty klawiszowe: -----------------------------" << endl;
 	cout << "Strzalka lewo / prawo - jasnosc" << endl;
 	cout << "Strzalka gora / dol - kontrast" << endl;
-	cout << "'[' - poprzedni kolor" << endl;
-	cout << "']' - nastepny kolor" << endl;
+	cout << "'[' - Poprzedni kolor" << endl;
+	cout << "']' - Nastepny kolor" << endl;
 	cout << "'P' - Pointer sledzacy wskaznik" << endl;
 	cout << "'L' - Linie sledzace wskaznik" << endl;
-	cout << "" << endl;
-
+	cout << "'R' - Czyszczenie konsoli" << endl;
+	cout << "'1' - Pozycja pointera ON/OFF" << endl;
+	cout << "'2' - Pierwsza liczba ON/OFF" << endl;
+	cout << "'3' - Operator ON/OFF" << endl;
+	cout << "'4' - Druga liczba ON/OFF" << endl;
+	cout << "'5' - Wynik ON/OFF" << endl;
+	cout << "'6' - Wybor ON/OFF" << endl;
+	cout << "'7' - WaitFrame ON/OFF" << endl;
+	cout << "'8' - Frame ON/OFF" << endl;
+	cout << "'9' - Okno Debuga" << endl;
+	cout << "'0' - Okno Czarno-Biale";
 }
 
 void controlPanel(int &cpSliderColor, int &iLowH, int &iHighH, int &iLowS, int &iHighS, int &iLowV, int &iHighV, int &isTrackerLiner, int &isTrackerPointer,
-	int &cpSliderContrast, int &cpSliderBrightness,	Scalar redColor, Scalar blueColor, Scalar greenColor, Scalar yellowColor, Scalar lightBlueColor, Scalar &colorPicked)
+	int &cpSliderContrast, int &cpSliderBrightness, Scalar redColor, Scalar blueColor, Scalar greenColor, Scalar yellowColor, Scalar lightBlueColor, Scalar &colorPicked)
 {
 	createTrackbar("R/B/G/Y/LB", "controlPanelWindow", &cpSliderColor, 4);  //wybor koloru red, blue , green , yellow ,light blue
 	createTrackbar("Liner", "controlPanelWindow", &isTrackerLiner, 1);
@@ -693,47 +728,47 @@ void controlPanel(int &cpSliderColor, int &iLowH, int &iHighH, int &iLowS, int &
 	}
 }
 
-void debugControlPanel(int &iSliderValue2, int &iSliderValue3, int &iSliderValue4, int &iSliderValue5, int &iSliderValue6, int &iSliderValue7, int &iSliderValue8, int &iSliderValue9,
+void debugControlPanel(int &isPosition, int &is1stNum, int &isOperator, int &is2ndNum, int &isResult, int &isChoice, int &isWaitFrame, int &isFrame,
 	int iLastX, int iLastY, int firstNum, int secondNum, int operation, float result, int choice, int waitFrame, int frame)
 {
-	createTrackbar(">_position", "debugControlPanelWindow", &iSliderValue2, 1);
-	createTrackbar(">_1stNum", "debugControlPanelWindow", &iSliderValue3, 1);
-	createTrackbar(">_Operator", "debugControlPanelWindow", &iSliderValue4, 1);
-	createTrackbar(">_2ndNum", "debugControlPanelWindow", &iSliderValue5, 1);
-	createTrackbar(">_Result", "debugControlPanelWindow", &iSliderValue6, 1);
-	createTrackbar(">_choice", "debugControlPanelWindow", &iSliderValue7, 1);
-	createTrackbar(">_waitframe", "debugControlPanelWindow", &iSliderValue8, 1);
-	createTrackbar(">_frame", "debugControlPanelWindow", &iSliderValue9, 1);
+	createTrackbar(">_position", "debugControlPanelWindow", &isPosition, 1);
+	createTrackbar(">_1stNum", "debugControlPanelWindow", &is1stNum, 1);
+	createTrackbar(">_Operator", "debugControlPanelWindow", &isOperator, 1);
+	createTrackbar(">_2ndNum", "debugControlPanelWindow", &is2ndNum, 1);
+	createTrackbar(">_Result", "debugControlPanelWindow", &isResult, 1);
+	createTrackbar(">_choice", "debugControlPanelWindow", &isChoice, 1);
+	createTrackbar(">_waitframe", "debugControlPanelWindow", &isWaitFrame, 1);
+	createTrackbar(">_frame", "debugControlPanelWindow", &isFrame, 1);
 
-	if (iSliderValue2 == 1)
+	if (isPosition == 1)
 	{
 		cout << "Pozycja X: " << iLastX << " _Y: " << iLastY << endl;
 	}
-	if (iSliderValue3 == 1)
+	if (is1stNum == 1)
 	{
 		cout << "1st num: " << firstNum << endl;
 	}
-	if (iSliderValue4 == 1)
+	if (isOperator == 1)
 	{
 		cout << "operator: " << operation << endl;
 	}
-	if (iSliderValue5 == 1)
+	if (is2ndNum == 1)
 	{
 		cout << "2nd num: " << secondNum << endl;
 	}
-	if (iSliderValue6 == 1)
+	if (isResult == 1)
 	{
 		cout << "result: " << result << endl;
 	}
-	if (iSliderValue7 == 1)
+	if (isChoice == 1)
 	{
 		cout << "choice: " << choice << endl;
 	}
-	if (iSliderValue8 == 1)
+	if (isWaitFrame == 1)
 	{
 		cout << "waitframe: " << waitFrame << endl;
 	}
-	if (iSliderValue9 == 1)
+	if (isFrame == 1)
 	{
 		cout << "frame: " << frame << endl;
 	}
@@ -839,7 +874,8 @@ void changeBrightness(int cpSliderBrightness, int cpBrightnessFirstNum, int cpBr
 	brigtnessChange.convertTo(imgOriginal, cpBrightnessFirstNum, cpBrightnessSecondNum, cpBrightnessThirdNum); //contrast change
 }
 
-void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int &cpSliderColor, int &isTrackerLiner, int &isTrackerPointer)
+void keyBind(Mat imgOriginal, int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int &cpSliderColor, int &isTrackerLiner,
+	int &isTrackerPointer, int &ifShowError, string &newError, int &isFrame, int &isWaitFrame, int &isChoice, int &isResult, int &is2ndNum, int &isOperator, int &is1stNum, int &isPosition)
 {
 	/*
 	1 (position)= 49
@@ -850,8 +886,9 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 	6 (choice) = 54
 	7 (wait frame) = 55
 	8 (frame) = 56
-	9 () = 57
-	0 () = 48
+	9 (show debug window) = 57
+	0 (show blackwhite window) = 48
+
 	L (liner) = 108
 	P (pointer) = 112
 	R (reset) = 114 (reset and clear console)
@@ -867,37 +904,63 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		system("cls");
 		loadingInfo();
 	}
-	if (keyPressed == 49)
+	if (keyPressed == 49)  //position
 	{
 
 	}
-	if (keyPressed == 50)
+	if (keyPressed == 50) //1st number
 	{
 
 	}
-	if (keyPressed == 51)
+	if (keyPressed == 51) //operator
 	{
 
 	}
-	if (keyPressed == 52)
+	if (keyPressed == 52) //2nd num
 	{
 
 	}
-	if (keyPressed == 53)
+	if (keyPressed == 53) //result
 	{
 
 	}
-	if (keyPressed == 54)
+	if (keyPressed == 54) //choice
 	{
 
 	}
-	if (keyPressed == 55)
+	if (keyPressed == 55) //waitframe
 	{
-
+		if (isWaitFrame == 0)
+		{
+			isWaitFrame = 1;
+			newError = "Debug Frame ON";
+			newShowError("Debug Frame ON", imgOriginal, ifShowError = 1, newError);
+			Sleep(50);
+		}
+		else if (isWaitFrame == 1)
+		{
+			isWaitFrame = 0;
+			newError = "Debug Frame OFF";
+			newShowError("Debug Frame OFF", imgOriginal, ifShowError = 1, newError);
+			Sleep(50);
+		}
 	}
-	if (keyPressed == 56)
+	if (keyPressed == 56) //frame
 	{
-
+		if (isFrame == 0)
+		{
+			isFrame = 1;
+			newError = "Debug Frame ON";
+			newShowError("Debug Frame ON", imgOriginal, ifShowError = 1, newError);
+			Sleep(50);
+		}
+		else if (isFrame == 1)
+		{
+			isFrame = 0;
+			newError = "Debug Frame OFF";
+			newShowError("Debug Frame OFF", imgOriginal, ifShowError = 1, newError);
+			Sleep(50);
+		}
 	}
 	if (keyPressed == 57)
 	{
@@ -912,10 +975,16 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		if (isTrackerLiner == 0)
 		{
 			isTrackerLiner = 1;
+			newError = "Wlaczono liner";
+			newShowError("Wlaczono liner", imgOriginal, ifShowError = 1, newError);
+			Sleep(50);
 		}
 		else if (isTrackerLiner == 1)
 		{
 			isTrackerLiner = 0;
+			newError = "Wylaczono liner";
+			newShowError("Wylaczono liner", imgOriginal, ifShowError = 1, newError);
+			Sleep(50);
 		}
 	}
 	if (keyPressed == 112)
@@ -923,10 +992,14 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		if (isTrackerPointer == 0)
 		{
 			isTrackerPointer = 1;
+			newError = "Wlaczono pointer";
+			newShowError("Wlaczono pointer", imgOriginal, ifShowError = 1, newError);
 		}
 		else if (isTrackerPointer == 1)
 		{
 			isTrackerPointer = 0;
+			newError = "Wylaczono pointer";
+			newShowError("Wylaczono pointer", imgOriginal, ifShowError = 1, newError);
 		}
 	}
 	if (keyPressed == 91)
@@ -934,6 +1007,8 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		if (cpSliderColor > 0)
 		{
 			cpSliderColor = cpSliderColor - 1;
+			newError = "Zmienino kolor";
+			newShowError("Zmienino kolor", imgOriginal, ifShowError = 1, newError);
 		}
 	}
 	if (keyPressed == 93)
@@ -941,6 +1016,8 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		if (cpSliderColor < 5)
 		{
 			cpSliderColor = cpSliderColor + 1;
+			newError = "Zmienino kolor";
+			newShowError("Zmienino kolor", imgOriginal, ifShowError = 1, newError);
 		}
 	}
 	if (keyPressed == 77)
@@ -948,6 +1025,8 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		if (cpSliderBrightness < 10)
 		{
 			cpSliderBrightness = cpSliderBrightness + 1;
+			newError = "Zwiekszono jasnosc";
+			newShowError("Zwiekszono jasnosc", imgOriginal, ifShowError = 1, newError);
 		}
 	}
 	if (keyPressed == 75)
@@ -955,6 +1034,8 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		if (cpSliderBrightness > 0)
 		{
 			cpSliderBrightness = cpSliderBrightness - 1;
+			newError = "Zmniejszono jasnosc";
+			newShowError("Zmniejszono jasnosc", imgOriginal, ifShowError = 1, newError);
 		}
 	}
 	if (keyPressed == 72)
@@ -962,6 +1043,8 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		if (cpSliderContrast < 10)
 		{
 			cpSliderContrast = cpSliderContrast + 1;
+			newError = "Zwiekszono kontrast";
+			newShowError("Zwiekszono kontrast", imgOriginal, ifShowError = 1, newError);
 		}
 	}
 	if (keyPressed == 80)
@@ -969,14 +1052,19 @@ void keyBind(int keyPressed, int &cpSliderContrast, int &cpSliderBrightness, int
 		if (cpSliderContrast > 0)
 		{
 			cpSliderContrast = cpSliderContrast - 1;
+			newError = "Zmniejszono kontrast";
+			newShowError("Zmniejszono kontrast", imgOriginal, ifShowError = 1, newError);
 		}
 	}
 }
 
+#pragma region TODO
 /*
 TODO
+- dodanie do keybindow 'd' (show debug console i moze to drugie okno)
 - fix all warnings
-- dokonczyc key bindy
+- dokonczyc keybindy
+- poprawa error boxa (moze cos w stylu przesuwania)
 - fix result ( dzielenie nie dziala, int first & 2nd num -> float) ( znaleznie metody na wyswietalnie liczby po przecinku jesli nie .0 )
 - zmiana kontrastu i jasnosci tylko raz po zmianie a nie co kazdy loop petli ? czy aby napewno? - sprawdzenie wydajnosci
 - dodanie kontrastu i jasnosci do debuga ? po co?
@@ -985,6 +1073,7 @@ TODO
 - MAYBE: dodanie " i " do obrazu - wyswietlanie informacji i clearowanie konsoli
 - usprawnienie wydajnosci (windows error with debug option)
 */
+#pragma endregion
 
 int main(int argc, char** argv)
 {
@@ -999,14 +1088,28 @@ int main(int argc, char** argv)
 	int frame = 1;
 	float result = 123456;
 	string error;
+	string newError;
+	int ifShowError = 0; // czy aktualnie wyswietlac error boxa
+	int doShowError = 0; // czas wyswietlania error boxa we framach
 
 	int keyPressed;
 
 	int iLastX = -1;
 	int iLastY = -1;
 
-	int isTrackerLiner = 0;
-	int isTrackerPointer = 1;
+	int isPosition = 0; //1
+	int is1stNum = 0; //2
+	int isOperator = 0; //3
+	int is2ndNum = 0; //4
+	int isResult = 0; //5
+	int isChoice = 0; //6
+	int isWaitFrame = 0; //7
+	int isFrame = 0; //8
+	int isShowDebugWindow = 1; //9
+	int isShowBlackwhiteWindow = 1; //0
+
+	int isTrackerLiner = 0; //L
+	int isTrackerPointer = 1; //P
 	int cpSliderColor = 0;
 	int cpSliderContrast = 5;
 	int cpSliderBrightness = 5;
@@ -1019,16 +1122,6 @@ int main(int argc, char** argv)
 	Mat contrastChange;
 	Mat brightnessChange;
 	bool ifChanged = false;
-
-
-	int iSliderValue2 = 0;
-	int iSliderValue3 = 0;
-	int iSliderValue4 = 0;
-	int iSliderValue5 = 0;
-	int iSliderValue6 = 0;
-	int iSliderValue7 = 0;
-	int iSliderValue8 = 0;
-	int iSliderValue9 = 0;
 
 	// colors
 
@@ -1084,10 +1177,18 @@ int main(int argc, char** argv)
 		Mat imgOriginal;
 
 		controlPanel(cpSliderColor, iLowH, iHighH, iLowS, iHighS, iLowV, iHighV, isTrackerLiner, isTrackerPointer, cpSliderContrast, cpSliderBrightness,
-			redColor,  blueColor,  greenColor, yellowColor, lightBlueColor, colorPicked);
+			redColor, blueColor, greenColor, yellowColor, lightBlueColor, colorPicked);
 
-		debugControlPanel(iSliderValue2, iSliderValue3, iSliderValue4, iSliderValue5, iSliderValue6, iSliderValue7, iSliderValue8, iSliderValue9,
+		debugControlPanel(isPosition, is1stNum, isOperator, is2ndNum, isResult, isChoice, isWaitFrame, isFrame,
 			iLastX, iLastY, firstNum, secondNum, operation, result, choice, waitFrame, frame);
+
+
+		int isPosition = 0; //1
+		int is1stNum = 0; //2
+		int isOperator = 0; //3
+		int is2ndNum = 0; //4
+		int isResult = 0; //5
+		int isChoice = 0; //6
 
 		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
 
@@ -1160,12 +1261,13 @@ int main(int argc, char** argv)
 		//sprawdzanie pozycji wskaznika
 		updatePosition(waitFrame, choice, iLastX, iLastY);
 
-		while(_kbhit())
+		while (_kbhit())
 		{
 			fflush(stdin);
 			keyPressed = _getch();
-			cout << "key pressed: "  << keyPressed << endl;
-			keyBind(keyPressed, cpSliderContrast, cpSliderBrightness, cpSliderColor, isTrackerLiner, isTrackerPointer);
+			//cout << "key pressed: " << keyPressed << endl;
+			keyBind(imgOriginal, keyPressed, cpSliderContrast, cpSliderBrightness, cpSliderColor, isTrackerLiner, isTrackerPointer, ifShowError, newError,
+				isFrame, isWaitFrame, isChoice, isResult, is2ndNum, isOperator, is1stNum, isPosition);
 		}
 
 
@@ -1176,7 +1278,8 @@ int main(int argc, char** argv)
 		if (choice == 16)
 		{
 			cancelPick(firstNum, operation, secondNum, result);
-			showError("zresetowano", imgOriginal);
+			newError = "Zresetowano";
+			newShowError("Zresetowano", imgOriginal, ifShowError = 1, newError);
 		}
 		else if (firstNum == -1)
 		{
@@ -1186,11 +1289,13 @@ int main(int argc, char** argv)
 			}
 			else if (choice == 11 || choice == 12 || choice == 13 || choice == 14) // operatory
 			{
-				showError("Wpierw wybierz liczbe", imgOriginal);
+				newError = "Wpierw wybierz liczbe";
+				newShowError("Wpierw wybierz liczbe", imgOriginal, ifShowError = 1, newError);
 			}
 			else if (choice == 15) // equals
 			{
-				showError("Niepoprawne dzialanie", imgOriginal);
+				newError = "Niepoprawne dzialanie";
+				newShowError("Niepoprawne dzialanie", imgOriginal, ifShowError = 1, newError);
 			}
 		}
 		else if (firstNum != -1)
@@ -1203,11 +1308,13 @@ int main(int argc, char** argv)
 				}
 				else if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5 || choice == 6 || choice == 7 || choice == 8 || choice == 9 || choice == 10)
 				{
-					showError("Wybierz operator", imgOriginal);
+					newError = "Wybierz operator";
+					newShowError("Wybierz operator", imgOriginal, ifShowError = 1, newError);
 				}
 				else if (choice == 15)
 				{
-					showError("Niepoprawne dzialanie", imgOriginal);
+					newError = "Niepoprawne dzialanie";
+					newShowError("Niepoprawne dzialanie", imgOriginal, ifShowError = 1, newError);
 				}
 			}
 			else if (operation != -1)
@@ -1220,11 +1327,13 @@ int main(int argc, char** argv)
 					}
 					else if (choice == 11 || choice == 12 || choice == 13 || choice == 14)
 					{
-						showError("Wybierz liczbe", imgOriginal);
+						newError = "Wybierz liczbe";
+						newShowError("Wybierz liczbe", imgOriginal, ifShowError = 1, newError);
 					}
 					else if (choice == 15)
 					{
-						showError("Niepoprawne dzialanie", imgOriginal);
+						newError = "Niepoprawne dzialanie";
+						newShowError("Niepoprawne dzialanie", imgOriginal, ifShowError = 1, newError);
 					}
 				}
 				else if (secondNum != -1)
@@ -1232,12 +1341,13 @@ int main(int argc, char** argv)
 					// wyliczanie
 					if (choice == 15)
 					{
-						equalPick(firstNum, operation, secondNum, imgOriginal, choice, result);
+						equalPick(firstNum, operation, secondNum, imgOriginal, choice, result, ifShowError, newError);
 					}
 					else if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5 || choice == 6 || choice == 7 || choice == 8 || choice == 9 ||
 						choice == 10 || choice == 11 || choice == 12 || choice == 13 || choice == 14)
 					{
-						showError("Wykonaj dzialanie", imgOriginal);
+						newError = "Wykonaj dzialanie";
+						newShowError("Wykonaj dzialanie", imgOriginal, ifShowError = 1, newError);
 					}
 				}
 			}
@@ -1285,6 +1395,24 @@ int main(int argc, char** argv)
 		//showError("test", imgOriginal);
 
 #pragma endregion
+
+		if (ifShowError == 1)
+		{
+			if (doShowError > 0)
+			{
+				newShowError(error, imgOriginal, ifShowError, newError);
+				doShowError--;
+				if (doShowError == 0)
+				{
+					ifShowError = 0;
+					doShowError = 3;
+				}
+			}
+			if (doShowError == 0)
+			{
+				doShowError = 3;
+			}
+		}
 
 		namedWindow("Original", WINDOW_NORMAL);
 		imshow("Original", imgOriginal); //show the original image.
